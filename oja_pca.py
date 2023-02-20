@@ -1,10 +1,8 @@
 import numpy as np
 
 
-def oja_pca(X, m, eta, epoch, rate=1e-5):
+def oja_pca(X, m, eta, w_prev, epoch, rate=1e-5):
     n, d = X.shape
-    w_prev = np.random.rand(d) - 0.5
-    w_prev = w_prev / np.linalg.norm(w_prev)
     error = []
     for s in range(epoch):
         w = w_prev.copy()

@@ -29,10 +29,8 @@ def preprocess_data(X):
     return X_preprocessed
 
 
-def vr_pca(X, m, eta, epoch, rate=1e-5):
+def vr_pca(X, m, eta, w_t, epoch, rate=1e-5):
     n, d = X.shape
-    w_t = np.random.rand(d) - 0.5  # centers the values around zero
-    w_t = w_t / np.linalg.norm(w_t)
     error = []
     for s in range(epoch):
         u_t = X.T.dot(X.dot(w_t)) / n
