@@ -1,15 +1,19 @@
 import numpy as np
 
 
-def power_pca(A, v, m):
-    for i in range(m):
+def power_pca(A, w, epoch, rate=1e-5):
+    error = []
+    w_copy = w.copy()
+    for i in range(epoch):
         # Compute Av
-        Av = np.dot(A, v)
-
+        Av = np.dot(A, w)
         # Compute the norm of Av
         norm = np.linalg.norm(Av)
-
         # Normalize Av
-        v = Av / norm
-
-    return v
+        w = Av / norm
+        d = np.linalg.norm(w - w_copy)
+        error.append(d)
+        w_copy = w
+        if d < rate:
+            return w, error
+    return w, error
