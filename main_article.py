@@ -71,18 +71,18 @@ print('OJA_PCA: %f sec' % s)
 v = np.mean(X.dot(X.T).dot(w_oja) / w_oja)
 print('Leading eigenvector oja_pca:', v)
 
-# Apply oja_pca algorithm eta = eta-0.1
+# Apply oja_pca algorithm eta = eta-0.01
 start_time = time.time()
-w_oja, error_oja2 = oja_pca(X, m, eta-0.1, w_t, epoch, ground_truth)
+w_oja, error_oja2 = oja_pca(X, m, eta-0.01, w_t, epoch, ground_truth)
 s = time.time() - start_time
 print('OJA_PCA: %f sec' % s)
 # Compute variance explained by top principal component
 v = np.mean(X.dot(X.T).dot(w_oja) / w_oja)
 print('Leading eigenvector oja_pca:', v)
 
-# Apply oja_pca algorithm eta = eta+0.1
+# Apply oja_pca algorithm eta = eta+0.01
 start_time = time.time()
-w_oja, error_oja3 = oja_pca(X, m, eta+0.1, w_t, epoch, ground_truth)
+w_oja, error_oja3 = oja_pca(X, m, eta+0.01, w_t, epoch, ground_truth)
 s = time.time() - start_time
 print('OJA_PCA: %f sec' % s)
 # Compute variance explained by top principal component
@@ -95,7 +95,7 @@ plt.plot(np.arange(1, len(error_power)+1), error_power, '--r')
 plt.plot(np.arange(1, len(error_oja1)+1), error_oja1, '--g')
 plt.plot(np.arange(1, len(error_oja2)+1), error_oja2, color='#00FF00', linestyle='dashed')
 plt.plot(np.arange(1, len(error_oja3)+1), error_oja3, color='#BBF90F', linestyle='dashed')
-plt.legend(['VR-PCA Hybrid', 'VR-PCA', 'Power iterations', 'Oja, ηt=η', 'Oja, ηt=η-0.1', 'Oja, ηt=η+0.1'])
+plt.legend(['VR-PCA Hybrid', 'VR-PCA', 'Power iterations', 'Oja, ηt=η', 'Oja, ηt=η-0.01', 'Oja, ηt=η+0.01'])
 plt.ylabel('log-error')
 plt.xlabel('# data passes')
 plt.title('Cifar-10 Dataset')
@@ -103,5 +103,19 @@ plt.ylim([-10, 0])
 plt.xticks([0, 5, 10, 15, 20])
 plt.show()
 
-
-
+## Check for different learning rates
+labels = []
+for etot in [eta/20, eta/10, eta, eta*10, eta*20]:
+    w_vr, error_vr = vr_pca(X, m, etot, w_t, epoch, ground_truth)
+    if etot == eta:
+        labels.append('η =' + str(etot)[:-10] + ' (original η)')
+    else:
+        labels.append('η =' + str(etot)[:-10])
+    plt.plot(np.arange(1, len(error_vr)+1)*2, error_vr)
+plt.legend(labels)
+plt.ylabel('log-error')
+plt.xlabel('# data passes')
+plt.title('Cifar-10 Dataset - VR_PCA with different learning rates')
+plt.ylim([-10, 0])
+plt.xticks([0, 5, 10, 15, 20])
+plt.show()
