@@ -2,18 +2,21 @@ from scipy.sparse.linalg import eigsh
 import matplotlib.pyplot as plt
 from methods_pca import *
 import time
-from tensorflow.keras.datasets import fashion_mnist
+from tensorflow.keras.datasets import cifar10
 import random
 random.seed(2610)
 
-# Load the Fashion-MNIST dataset
-(x_train, y_train), (x_test, y_test) = fashion_mnist.load_data()
-# Combine the train and test sets into one dataset and center the data
-X = np.concatenate([x_train, x_test], axis=0).T
-y = np.concatenate([y_train, y_test], axis=0)
-X = X.reshape(-1, X.shape[-1])
-X = preprocess_data(X)
 
+# Load the cifar10 dataset
+(x_train, y_train), (x_test, y_test) = cifar10.load_data()
+# Combine the train and test sets into one dataset and center the data
+X = np.concatenate([x_train, x_test], axis=0)
+# Convert RGB to grayscale
+X_train_gray = np.dot(X, [0.2989, 0.5870, 0.1140])
+# Flatten images
+X = X.reshape(X.shape[0], -1).T
+# pre-processing images
+X = preprocess_data(X)
 
 # ground truth leading eigenvector v of the matrix
 eigenvalues, eigenvectors = eigsh(X.dot(X.T))
@@ -21,6 +24,7 @@ v = eigenvectors[:, np.argmax(abs(eigenvalues))]
 ground_truth = eigenvalues[np.argmax(abs(eigenvalues))]
 print('Leading eigenvector ground truth:', eigenvalues[np.argmax(abs(eigenvalues))])
 
+# parameter initialization
 epoch = 20
 d, n = X.shape
 m = n
@@ -94,8 +98,8 @@ plt.plot(np.arange(1, len(error_oja3)+1), error_oja3, color='#BBF90F', linestyle
 plt.legend(['VR-PCA Hybrid', 'VR-PCA', 'Power iterations', 'Oja, ηt=η', 'Oja, ηt=η-0.1', 'Oja, ηt=η+0.1'])
 plt.ylabel('log-error')
 plt.xlabel('# data passes')
-plt.title('Fashion-mnist Dataset')
-plt.ylim([0, -10])
+plt.title('Cifar-10 Dataset')
+plt.ylim([-10, 0])
 plt.xticks([0, 5, 10, 15, 20])
 plt.show()
 
